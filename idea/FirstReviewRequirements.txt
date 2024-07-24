@@ -1,0 +1,40 @@
+Abstract - what
+	   why
+	   how
+
+Introduction 
+
+Objective - 2 to 4
+
+System Requirements
+
+Existing System (literature survey) or (existing applications and their features)
+
+Proposed System 
+
+
+
+idea:
+user auth 
+admin panel
+	dashboard
+	budgeting per user
+
+user panel 
+	expense entry/ permission
+	dashboard
+	avalible budget allocation
+
+>> user should be able to sort and view data in the dashboard
+>> currency conversion using API, each user can choose currency
+
+
+
+what?
+	expense tracker web app
+
+why?
+	To track corporate expenses
+
+how? 
+	NEXT.js
