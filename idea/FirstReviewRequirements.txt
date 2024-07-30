@@ -38,3 +38,10 @@ why?
 
 how? 
 	NEXT.js
+
+
+Color pallette:
+#0F0F0F
+#232D3F
+#005B41
+#008170
