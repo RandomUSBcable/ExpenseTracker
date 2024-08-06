@@ -1,16 +1,16 @@
 export default function Home() {
   return (
     <div className="main">
-      <div className="Header">Header</div>
+      <div className="Header">Admin</div>
       <div className="Body">
         <div className="TimeSelector">
           <ul className="TimeSelectorOptions">
             {/*
-            <li className="TimeSelectorOptionSingle">past 7 days</li>
-            <li className="TimeSelectorOptionSingle">past 28 days</li>
-            <li className="TimeSelectorOptionSingle">this week</li>
-            <li className="TimeSelectorOptionSingle">this month</li>
-            */}
+              <li className="TimeSelectorOptionSingle">past 7 days</li>
+              <li className="TimeSelectorOptionSingle">past 28 days</li>
+              <li className="TimeSelectorOptionSingle">this week</li>
+              <li className="TimeSelectorOptionSingle">this month</li>
+              */}
           </ul>
         </div>
         <div className="Dashboard">DATA</div>

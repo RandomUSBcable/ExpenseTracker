@@ -105,3 +105,124 @@ a {
     color-scheme: dark;
   }
 }
+
+
+.main{
+  padding: 0;
+  margin: 0;
+}
+
+.Header{
+  min-height: 10svh;
+  background-color: #0f0f0f;
+}
+
+.Body{
+  min-height: 90svh;
+}
+
+.TimeSelector{
+  min-height:10vh;
+  margin: 2svh;
+  border-radius: 1rem;;
+  background-color: #232D3F;
+  display: flex;
+  flex-direction: column;
+}
+
+.TimeSelectorOptions{
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+}
+
+.TimeSelectorOptionSingle{
+  background-color:#008170 ;
+  font-size: 1rem;
+  padding: 0.3em;
+  border-radius: 0.3rem;
+}
+
+.Dashboard{
+  min-height: 60svh;
+  background-color: #232D3F;
+  margin: 2svh;
+  border-radius: 1rem;
+  display: flex;
+}
+
+.Bills{
+  margin-top: 10svh;
+}
+
+.BillsSelector{
+  min-height:10vh;
+  margin: 2svh;
+  border-radius: 1rem;;
+  background-color: #232D3F;
+  display: flex;
+  flex-direction: column;
+}
+
+.BillsContainer{
+  list-style: none;
+  display: grid;
+  grid-template-columns: auto auto auto;
+}
+
+.BillSingle{
+  background-color: azure;
+  color: black;
+  border-radius: 1rem;
+  margin: 1rem;
+  min-height: 30vh;
+}
+
+.BillEntry{
+  background-color: azure;
+  color: black;
+  border-radius: 1rem;
+  margin: 1rem;
+  min-height: 30vh;
+}
+
+.Footer{
+  min-height: 20svh;
+  background-color: #0f0f0f;
+  display:flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.FooterList{
+  font-size: 0.5rem;
+  padding: 1rem;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  }
+
+
+
+
+
+.LoginHolder{
+  width: 100%;
+  height: 80%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.Login{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
+}
+
+.LoginAdmin{
+padding: 2vh;
+}
