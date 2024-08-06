@@ -1,3 +1,5 @@
+import BillsContainer from "../components/BillsContainer";
+
 export default function Home() {
   return (
     <div className="main">
@@ -17,12 +19,8 @@ export default function Home() {
 
         <div className="Bills">
           <div className="BillsSelector"></div>
-          <ul className="BillsContainer">
-            <li className="BillSingle">Bill 1</li>
-            <li className="BillSingle">Bill 2</li>
-            <li className="BillSingle">Bill 3</li>
-            <li className="BillSingle">Bill 4</li>
-          </ul>
+
+          <BillsContainer />
         </div>
       </div>
       <div className="Footer">

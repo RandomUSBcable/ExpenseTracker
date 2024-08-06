@@ -1,7 +1,9 @@
 {
   "name": "clinet",
   "version": "0.1.0",
-  "private": true,
+  "proxy":"http://localhost:8080",
+  "private": false,
+  
   "scripts": {
     "dev": "next dev",
     "build": "next build",

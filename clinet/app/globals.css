@@ -121,7 +121,7 @@ a {
   min-height: 90svh;
 }
 
-.TimeSelector{
+.Options{
   min-height:10vh;
   margin: 2svh;
   border-radius: 1rem;;
@@ -152,13 +152,11 @@ a {
   display: flex;
 }
 
-.Bills{
-  margin-top: 10svh;
-}
 
 .BillsSelector{
   min-height:10vh;
   margin: 2svh;
+  margin-top: 10svh;
   border-radius: 1rem;;
   background-color: #232D3F;
   display: flex;

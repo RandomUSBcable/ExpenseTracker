@@ -3,7 +3,7 @@ export default function Home() {
     <div className="main">
       <div className="Header">Header</div>
       <div className="Body">
-        <div className="TimeSelector">
+        <div className="Options">
           <ul className="TimeSelectorOptions">
             {/*
             <li className="TimeSelectorOptionSingle">past 7 days</li>
