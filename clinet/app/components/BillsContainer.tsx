@@ -6,7 +6,7 @@ type billsItemType = {
   employee_name: string;
   category: string;
   cost: number;
-  billno: number;
+  bill_no: number;
 };
 
 let SampleBillList: billsItemType[] = [];
@@ -21,12 +21,25 @@ const BillsContainer = () => {
         console.log(data);
         setBills(data);
       });
-  });
+  }, []);
 
   return (
     <ul className="BillsContainer">
       {bills.map((billsItem: billsItemType) => (
-        <li className="BillSingle">{billsItem.employee_name}</li>
+        <li className="BillSingle">
+          <div className="BillHeader">
+            <div className="BillNo">{billsItem.bill_no}</div>
+            <div className="BillRecipient">abcdefghijakm</div>
+          </div>
+          <div className="BillBody">
+            <div className="BillUser">{billsItem.employee_name}</div>
+            <div className="BillCost">₹{billsItem.cost}</div>
+            <div className="BillCategory">{billsItem.category}</div>
+          </div>
+          <div className="BillFooter">
+            <div className="BillStatus">Reinbursed</div>
+          </div>
+        </li>
       ))}
     </ul>
   );

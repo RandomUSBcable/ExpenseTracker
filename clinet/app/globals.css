@@ -152,6 +152,11 @@ a {
   display: flex;
 }
 
+.DashboardTotal{
+  padding: 0.5rem;
+  font-size: 1.5rem;
+}
+
 
 .BillsSelector{
   min-height:10vh;
@@ -175,6 +180,51 @@ a {
   border-radius: 1rem;
   margin: 1rem;
   min-height: 30vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.BillHeader{
+  height: 30%;
+  display:flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.BillNo{
+  padding: 1rem;
+  padding-right:0;
+}
+
+.BillRecipient{
+  padding: 1rem;
+  padding-left: 0;
+}
+
+.BillBody{
+  height: 60%;
+  padding: 1rem;
+}
+
+.BillUser{
+  font-size: 1.5rem;
+}
+
+.BillCost{
+  font-size: 2rem;
+}
+
+.BillCategory{
+}
+
+.BillFooter{
+  height: 10%;
+
+}
+
+.BillStatus{
+  text-align: center;
 }
 
 .BillEntry{
@@ -186,7 +236,7 @@ a {
 }
 
 .Footer{
-  min-height: 20svh;
+  min-height: 10svh;
   background-color: #0f0f0f;
   display:flex;
   flex-direction: column;
@@ -194,7 +244,7 @@ a {
 }
 
 .FooterList{
-  font-size: 0.5rem;
+  font-size: 1rem;
   padding: 1rem;
   list-style: none;
   display: flex;

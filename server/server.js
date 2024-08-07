@@ -13,7 +13,7 @@ const jsonOne = {
     {
     employee_id: 1, 
     employee_name: "Abi", 
-    category: "food", 
+    category: "Food", 
     cost:100, 
     bill_no: 101
     },
@@ -48,7 +48,6 @@ const jsonOne = {
     
 app.get("/api/Admin", (req, res) =>{
     res.json(jsonOne.info);
-    console.log(jsonOne.info);
 })
 
 const filterByUser = ((inputJSON, userID = 1)=>{

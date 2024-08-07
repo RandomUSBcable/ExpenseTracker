@@ -1,4 +1,6 @@
 import BillsContainer from "../components/BillsContainer";
+import Dashboard from "../components/Dashboard";
+import Footer from "../components/Footer";
 
 export default function Home() {
   return (
@@ -15,22 +17,14 @@ export default function Home() {
               */}
           </ul>
         </div>
-        <div className="Dashboard">DATA</div>
+        <Dashboard />
 
         <div className="Bills">
           <div className="BillsSelector"></div>
-
           <BillsContainer />
         </div>
       </div>
-      <div className="Footer">
-        <ul className="FooterList">
-          <li>HOME</li>
-          <li>Log Out</li>
-          <li>Back to top</li>
-          <li>HELP</li>
-        </ul>
-      </div>
+      <Footer />
     </div>
   );
 }
