@@ -44,6 +44,20 @@ function Dashboard() {
     }
   });
 
+  let totalPerCategory: { category: string; total: number }[] = [];
+  bills.forEach((bill) => {
+    let flag: number = 0;
+    totalPerCategory.forEach((user) => {
+      if (user.category === bill.category) {
+        user.total = user.total + bill.cost;
+        flag = 1;
+      }
+    });
+    if (!flag) {
+      totalPerCategory.push({ category: bill.category, total: bill.cost });
+    }
+  });
+
   return (
     <div className="Dashboard">
       <div className="DashboardTotal">Total = {total}</div>
@@ -51,6 +65,13 @@ function Dashboard() {
         return (
           <div className="DashboardTotal">
             {user.userID} : {user.total}
+          </div>
+        );
+      })}
+      {totalPerCategory.map((user) => {
+        return (
+          <div className="DashboardTotal">
+            {user.category} : {user.total}
           </div>
         );
       })}

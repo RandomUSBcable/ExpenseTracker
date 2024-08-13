@@ -45,7 +45,8 @@ const jsonOne = {
     cost:100, 
     bill_no:105
     }]}
-    
+
+
 app.get("/api/Admin", (req, res) =>{
     res.json(jsonOne.info);
 })

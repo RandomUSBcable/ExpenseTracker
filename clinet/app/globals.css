@@ -216,11 +216,11 @@ a {
 }
 
 .BillCategory{
+  font-size: 1.25rem;
 }
 
 .BillFooter{
   height: 10%;
-
 }
 
 .BillStatus{
