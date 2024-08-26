@@ -8,47 +8,90 @@ const PORT = 8080;
 
 app.use(cors());
 
-const jsonOne = {
+const BillData = {
     info:[
     {
     employee_id: 1, 
     employee_name: "Abi", 
     category: "Food", 
     cost:100, 
-    bill_no: 101
+    bill_no: 101,
+    bill_recipient:"abcabdfgljasbndjklna",
+    bill_date:20240810,
+    submitted_date:20240811,
+    bill_status: "reinbursed"
     },
     {
     employee_id: 2, 
     employee_name: "Jude", 
     category: "Travel", 
     cost:100, 
-    bill_no:102
+    bill_no:102,
+    bill_recipient:"abcabdfgljasbndjklna",
+    bill_date:20240810,
+    submitted_date:20240811,
+    bill_status: "reinbursed" 
     },
     {
     employee_id: 3, 
     employee_name: "Bob", 
     category: "Food", 
     cost:100, 
-    bill_no:103
+    bill_no:103,
+    bill_recipient:"abcabdfgljasbndjklna",
+    bill_date:20240810,
+    submitted_date:20240811,
+    bill_status: "reinbursed" 
     },
     {
     employee_id: 1, 
     employee_name: "Abi", 
     category: "Medical", 
     cost:100, 
-    bill_no:104
+    bill_no:104,
+    bill_recipient:"abcabdfgljasbndjklna",
+    bill_date:20240810,
+    submitted_date:20240811,
+    bill_status: "reinbursed" 
     },
     {
     employee_id: 4, 
     employee_name: "Sean", 
     category: "Materials", 
     cost:100, 
-    bill_no:105
+    bill_no:105,
+    bill_recipient:"abcabdfgljasbndjklna",
+    bill_date:20240810,
+    submitted_date:20240811,
+    bill_status: "reinbursed" 
     }]}
 
+const UserData = {
+    info: 
+    [{
+        employee_id: 1,
+        employee_name:"Abi",
+    },{
+        employee_id:2, 
+        employee_name:"Jude"
+    },{
+        employee_id:2, 
+        employee_name:"Bob"
+    },{
+        employee_id:4,
+        employee_name:"Sean"
+    }]
+}
+
+
+const AdminData ={
+bills: BillData,
+users: UserData,
+
+} 
 
 app.get("/api/Admin", (req, res) =>{
-    res.json(jsonOne.info);
+    res.json(BillData.info);
 })
 
 const filterByUser = ((inputJSON, userID = 1)=>{
@@ -66,7 +109,7 @@ const filterByUser = ((inputJSON, userID = 1)=>{
 app.get("/api/User/:userID", (req, res) =>{
     //res.json(filteredForUser);
     const userID = req.params.userID || 1;
-    res.json(filterByUser(jsonOne,userID))
+    res.json(filterByUser(BillData,userID))
 })
 
 app.listen(PORT, () => {console.log(`Listening on port: ${PORT}`)});

@@ -1,8 +1,32 @@
+"use client";
+
 import BillsContainer from "../components/BillsContainer";
 import Dashboard from "../components/Dashboard";
 import Footer from "../components/Footer";
+import React, { useEffect } from "react";
+
+type billsItemType = {
+  employee_id: number;
+  employee_name: string;
+  category: string;
+  cost: number;
+  bill_no: number;
+};
+
+let SampleBillList: billsItemType[] = [];
 
 export default function Home() {
+  const [bills, setBills] = React.useState(SampleBillList);
+
+  useEffect(() => {
+    fetch("http://localhost:8080/api/Admin")
+      .then((response) => response.json())
+      .then((data: billsItemType[]) => {
+        console.log(data);
+        setBills(data);
+      });
+  }, []);
+
   return (
     <div className="main">
       <div className="Header">Admin</div>
