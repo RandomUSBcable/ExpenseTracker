@@ -4,6 +4,7 @@ import BillsContainer from "../components/BillsContainer";
 import Dashboard from "../components/Dashboard";
 import Footer from "../components/Footer";
 import React, { useEffect } from "react";
+import UsersContainer from "../components/UsersContainer";
 
 type billsItemType = {
   employee_id: number;
@@ -44,7 +45,9 @@ export default function Home() {
         <Dashboard />
 
         <div className="Bills">
-          <div className="BillsSelector"></div>
+          <div className="BillsSelector">Employees</div>
+          <UsersContainer />
+          <div className="BillsSelector">Bills Submitted</div>
           <BillsContainer />
         </div>
       </div>

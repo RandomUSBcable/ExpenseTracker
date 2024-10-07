@@ -1,5 +1,6 @@
 const json = require("body-parser/lib/types/json");
 const express = require("express");
+const mysql = require("mysql");
 
 const cors = require("cors");
 
@@ -8,15 +9,35 @@ const PORT = 8080;
 
 app.use(cors());
 
+const db = mysql.createConnection({
+    host: "localhost",
+    user: "root",
+    password: "root",
+    database: "expense_tracker"
+  });
+  
+  // Connect to database
+db.connect((err) => {
+    if (err) {
+      console.error('error connecting:', err);
+      return;
+    }
+    console.log('connected as id ' + db.threadId);
+  });
+  
+  // Add middleware
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 const BillData = {
     info:[
     {
     employee_id: 1, 
     employee_name: "Abi", 
     category: "Food", 
-    cost:100, 
+    cost:1000, 
     bill_no: 101,
-    bill_recipient:"abcabdfgljasbndjklna",
+    bill_recipient:"SaravanaBhavan",
     bill_date:20240810,
     submitted_date:20240811,
     bill_status: "reinbursed"
@@ -25,9 +46,9 @@ const BillData = {
     employee_id: 2, 
     employee_name: "Jude", 
     category: "Travel", 
-    cost:100, 
+    cost:10000, 
     bill_no:102,
-    bill_recipient:"abcabdfgljasbndjklna",
+    bill_recipient:"Air India",
     bill_date:20240810,
     submitted_date:20240811,
     bill_status: "reinbursed" 
@@ -36,9 +57,9 @@ const BillData = {
     employee_id: 3, 
     employee_name: "Bob", 
     category: "Food", 
-    cost:100, 
+    cost:2000, 
     bill_no:103,
-    bill_recipient:"abcabdfgljasbndjklna",
+    bill_recipient:"Anjappar",
     bill_date:20240810,
     submitted_date:20240811,
     bill_status: "reinbursed" 
@@ -47,9 +68,9 @@ const BillData = {
     employee_id: 1, 
     employee_name: "Abi", 
     category: "Medical", 
-    cost:100, 
+    cost:500, 
     bill_no:104,
-    bill_recipient:"abcabdfgljasbndjklna",
+    bill_recipient:"Global Hospitals",
     bill_date:20240810,
     submitted_date:20240811,
     bill_status: "reinbursed" 
@@ -60,7 +81,7 @@ const BillData = {
     category: "Materials", 
     cost:100, 
     bill_no:105,
-    bill_recipient:"abcabdfgljasbndjklna",
+    bill_recipient:"SM Stationary",
     bill_date:20240810,
     submitted_date:20240811,
     bill_status: "reinbursed" 
@@ -83,15 +104,23 @@ const UserData = {
     }]
 }
 
+const AllocationData ={
+    info:
+    [{
+        employee_id: 1,
+        start_date:0,
+        end_date:0,
+        amount: 500
+    }]
+}
 
 const AdminData ={
-bills: BillData,
-users: UserData,
-
+bills: BillData.info,
+users: UserData.info,
 } 
 
 app.get("/api/Admin", (req, res) =>{
-    res.json(BillData.info);
+    res.json(AdminData);
 })
 
 const filterByUser = ((inputJSON, userID = 1)=>{

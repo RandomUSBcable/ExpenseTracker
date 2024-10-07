@@ -23,7 +23,9 @@ const Bill = (props: Props) => {
     <li className="BillSingle">
       <div className="BillHeader">
         <div className="BillNo">{props.billsInfo.bill_no}</div>
-        <div className="BillRecipient">{props.billsInfo.bill_recipient}</div>
+        <div className="BillRecipient">
+          to: {props.billsInfo.bill_recipient}
+        </div>
       </div>
       <div className="BillBody">
         <div className="BillUser">{props.billsInfo.employee_name}</div>
@@ -31,6 +33,7 @@ const Bill = (props: Props) => {
         <div className="BillCategory">{props.billsInfo.category}</div>
       </div>
       <div className="BillFooter">
+        <div className="BillDate">07/10/2024</div>
         <div className="BillStatus">{props.billsInfo.bill_status}</div>
       </div>
     </li>

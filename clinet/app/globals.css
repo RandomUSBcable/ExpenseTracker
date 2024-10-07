@@ -171,7 +171,7 @@ a {
 .BillsContainer{
   list-style: none;
   display: grid;
-  grid-template-columns: auto auto auto;
+  grid-template-columns: repeat(auto-fit, minmax(min(20rem, 100%),1fr));
 }
 
 .BillSingle{
@@ -180,6 +180,7 @@ a {
   border-radius: 1rem;
   margin: 1rem;
   min-height: 30vh;
+  min-width: 10vh;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -221,6 +222,9 @@ a {
 
 .BillFooter{
   height: 10%;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
 }
 
 .BillStatus{
@@ -234,6 +238,47 @@ a {
   margin: 1rem;
   min-height: 30vh;
 }
+
+.UsersContainer{
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(20rem, 100%),1fr));
+}
+
+.UserSingle{
+  background-color: azure;
+  color: black;
+  border-radius: 1rem;
+  margin: 1rem;
+  min-height: 65vh;
+  min-width: 10vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.UserHeader{
+  height: 30%;
+  display:flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.UserNo{
+  padding: 1rem;
+  padding-right:0;
+}
+
+.UserBody{
+  height: 60%;
+  padding: 1rem;
+}
+
+.UserName{
+  font-size: 2.5rem;
+  text-align: center;
+}
+
 
 .Footer{
   min-height: 10svh;

@@ -1,9 +1,8 @@
 {
   "name": "clinet",
   "version": "0.1.0",
-  "proxy":"http://localhost:8080",
+  "proxy": "http://localhost:8080",
   "private": false,
-  
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -11,16 +10,18 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "d3": "^7.9.0",
+    "next": "14.2.14",
     "react": "^18",
     "react-dom": "^18",
-    "next": "14.2.5"
+    "recharts": "^2.12.7"
   },
   "devDependencies": {
-    "typescript": "^5",
     "@types/node": "^22",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "eslint": "^9",
-    "eslint-config-next": "14.2.5"
+    "eslint-config-next": "14.2.14",
+    "typescript": "^5"
   }
 }
