@@ -70,12 +70,18 @@ type billsItemType = {
 
 type UsersItemType = {
   user: string;
-  userId: number;
+  total: number;
+};
+
+type CategoryItemType = {
+  category: string;
+  total: number;
 };
 
 type AdminInfo = {
   bills: billsItemType[];
   users: UsersItemType[];
+  categories: CategoryItemType[];
 };
 
 let SampleBillList: billsItemType[] = [];

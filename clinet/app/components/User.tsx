@@ -15,8 +15,9 @@ type billsItemType = {
 };
 
 type UsersItemType = {
-  employee_id: number;
   employee_name: string;
+  employee_id: number;
+  total: number;
 };
 
 type Props = {
@@ -27,14 +28,14 @@ const User = (props: Props) => {
   return (
     <li className="UserSingle">
       <div className="UserHeader">
-        <div className="UserNo">ID: {props.userInfo.employee_id}</div>
+        <div className="UserNo">ID: </div>
         <div className="BillRecipient">Conpany Name</div>
       </div>
       <div className="UserBody">
         <div className="UserName">{props.userInfo.employee_name}</div>
         <div className="UserName">====</div>
         <div className="BillCategory">title</div>
-        <div className="BillCost">₹TotalCost</div>
+        <div className="BillCost">₹{props.userInfo.total}</div>
       </div>
       <div className="UserFooter">
         <div className="BillStatus">

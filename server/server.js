@@ -119,26 +119,103 @@ bills: BillData.info,
 users: UserData.info,
 } 
 
-app.get("/api/Admin", (req, res) =>{
-    res.json(AdminData);
-})
-
-const filterByUser = ((inputJSON, userID = 1)=>{
-    list=[]
-    inputJSON.info.forEach((input)=>{if(input.employee_id==userID){list.push(input)}})
-    if (list == []){
-        return [{}]
+const getBillsFromDatabase = () => {
+    return new Promise((resolve, reject) => {
+      const query = "SELECT * FROM bills";
+      db.query(query, (err, results) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(results);
+        }
+      });
+    });
+  };
+  
+app.get("/api/Admin", async (req, res) => {
+    try {
+        const bills = await getBillsFromDatabase();
+        
+    } catch (err) {
+        console.error(err);
+        bills = BillData.info;
+        //res.status(500).json({ message: "Error retrieving bills" });
     }
-    return list
-    //return inputJSON.info.filter(employee_id === userID);
-})
 
+    const users = [];
+    const categories = {};
+
+    bills.forEach(bill => {
+        if (!users[bill.employee_id-1]) {
+            users[bill.employee_id-1] = { employee_id: bill.employee_id, employee_name: bill.employee_name, total: 0 };
+          }
+          users[bill.employee_id-1].total += bill.cost;
+    
+          if (!categories[bill.category]) {
+            categories[bill.category] = 0;
+          }
+          categories[bill.category] += bill.cost;
+    });
+
+    res.json({
+    bills: bills,
+    users: users,
+    categories: categories
+    });
+});
+
+const filterByUser   = (inputJSON, userID) => {
+    const filteredBills = inputJSON.filter(item => item.employee_id == userID);
+    let totalAmount = 0;
+    const categoryTotals = {};
+
+    if (filteredBills.length > 0) {
+        totalAmount = filteredBills.reduce((acc, bill) => acc + bill.cost, 0);
+        filteredBills.forEach(bill => {
+        if (!categoryTotals[bill.category]) {
+            categoryTotals[bill.category] = 0;
+        }
+        categoryTotals[bill.category] += bill.cost;
+        });
+    }
+    return { bills: filteredBills, totalAmount, categoryTotals };
+}
 //const filteredForUser = jsonOne.info.filter(filterByUser)
 
 app.get("/api/User/:userID", (req, res) =>{
     //res.json(filteredForUser);
     const userID = req.params.userID || 1;
-    res.json(filterByUser(BillData,userID))
+    res.json(filterByUser(BillData.info,userID))
 })
+
+const validateBill = (bill) => {
+    const requiredFields = ['employee_id', 'employee_name', 'category', 'cost', 'bill_no', 'bill_recipient', 'bill_date', 'submitted_date', 'bill_status'];
+    for (const field of requiredFields) {
+      if (!bill[field] || bill[field] === '') {
+        return false;
+      }
+    }
+    return true;
+  };
+  
+app.post('/api/Bills', (req, res) => {
+    const bill = req.body;
+    if (!validateBill(bill)) {
+      res.status(400).json({ message: 'Invalid bill data' });
+      return;
+    }
+  
+    const query = 'INSERT INTO bills SET ?';
+    db.query(query, bill, (err, results) => {
+      if (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Error storing bill' });
+      } else {
+        res.json({ message: 'Bill stored successfully' });
+      }
+    });
+  });
+  
+
 
 app.listen(PORT, () => {console.log(`Listening on port: ${PORT}`)});
