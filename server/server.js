@@ -29,6 +29,7 @@ db.connect((err) => {
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+
 const BillData = {
     info:[
     {
@@ -133,12 +134,15 @@ const getBillsFromDatabase = () => {
   };
   
 app.get("/api/Admin", async (req, res) => {
+  let bills = BillData.info;
     try {
-        const bills = await getBillsFromDatabase();
+        bills = await getBillsFromDatabase();
+
+        console.log(bills)
         
     } catch (err) {
         console.error(err);
-        bills = BillData.info;
+        
         //res.status(500).json({ message: "Error retrieving bills" });
     }
 
