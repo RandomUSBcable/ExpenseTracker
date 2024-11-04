@@ -9,8 +9,8 @@ type billsItemType = {
   cost: number;
   bill_no: number;
   bill_recipient: string;
-  bill_date: number;
-  submitted_date: number;
+  bill_date: number | Date;
+  submitted_date: number | Date;
   bill_status: string;
 };
 

@@ -12,7 +12,9 @@ const Footer = () => {
         <li>
           <Link href="./Login">Log Out</Link>
         </li>
-        <li>HELP</li>
+        <li>
+          <Link href="./Help">HELP</Link>
+        </li>
       </ul>
     </div>
   );

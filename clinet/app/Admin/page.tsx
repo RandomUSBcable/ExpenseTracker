@@ -30,7 +30,7 @@ export default function Home() {
 
   return (
     <div className="main">
-      <div className="Header">Admin</div>
+      <div className="Header">ADMIN DASHBOARD</div>
       <div className="Body">
         <div className="TimeSelector">
           <ul className="TimeSelectorOptions">
@@ -45,7 +45,6 @@ export default function Home() {
         <Dashboard />
 
         <div className="Bills">
-          <div className="BillsSelector">Employees</div>
           <UsersContainer />
           <div className="BillsSelector">Bills Submitted</div>
           <BillsContainer />

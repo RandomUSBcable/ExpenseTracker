@@ -93,7 +93,7 @@ const BillsContainer = () => {
   const [filterRecipient, setFilterRecipient] = React.useState("");
   const [filterCategory, setFilterCategory] = React.useState("");
   const [filterUserId, setFilterUserId] = React.useState(0);
-  const [filterAmountMin, setFilterAmountMin] = React.useState(0);
+  const [filterAmountMin, setFilterAmountMin] = React.useState(100);
   const [filterAmountMax, setFilterAmountMax] = React.useState(Infinity);
 
   useEffect(() => {
@@ -152,55 +152,57 @@ const BillsContainer = () => {
 
   return (
     <div>
-      <button onClick={handleSort}>
-        Sort by cost {sortOrder === "asc" ? "↑" : "↓"}
-      </button>
-      <select
-        value={filterRecipient}
-        onChange={(e) => setFilterRecipient(e.target.value)}
-      >
-        <option value="">Select recipient</option>
-        {uniqueRecipients.map((recipient) => (
-          <option key={recipient} value={recipient}>
-            {recipient}
-          </option>
-        ))}
-      </select>
-      <select
-        value={filterCategory}
-        onChange={(e) => setFilterCategory(e.target.value)}
-      >
-        <option value="">Select category</option>
-        {uniqueCategories.map((category) => (
-          <option key={category} value={category}>
-            {category}
-          </option>
-        ))}
-      </select>
-      <select
-        value={filterUserId}
-        onChange={(e) => setFilterUserId(Number(e.target.value))}
-      >
-        <option value="">Select user ID</option>
-        {uniqueUserIds.map((userId) => (
-          <option key={userId} value={userId}>
-            {userId}
-          </option>
-        ))}
-      </select>
-      <input
-        type="number"
-        value={filterAmountMin}
-        onChange={(e) => setFilterAmountMin(Number(e.target.value))}
-        placeholder="Min amount"
-      />
-      <input
-        type="number"
-        value={filterAmountMax}
-        onChange={(e) => setFilterAmountMax(Number(e.target.value))}
-        placeholder="Max amount"
-      />
-      <button onClick={handleFilter}>Apply filters</button>
+      <div className="BillsSelector">
+        <button onClick={handleSort}>
+          Sort by cost {sortOrder === "asc" ? "↑" : "↓"}
+        </button>
+        <select
+          value={filterRecipient}
+          onChange={(e) => setFilterRecipient(e.target.value)}
+        >
+          <option value="">Select recipient</option>
+          {uniqueRecipients.map((recipient) => (
+            <option key={recipient} value={recipient}>
+              {recipient}
+            </option>
+          ))}
+        </select>
+        <select
+          value={filterCategory}
+          onChange={(e) => setFilterCategory(e.target.value)}
+        >
+          <option value="">Select category</option>
+          {uniqueCategories.map((category) => (
+            <option key={category} value={category}>
+              {category}
+            </option>
+          ))}
+        </select>
+        <select
+          value={filterUserId}
+          onChange={(e) => setFilterUserId(Number(e.target.value))}
+        >
+          <option value="">Select user ID</option>
+          {uniqueUserIds.map((userId) => (
+            <option key={userId} value={userId}>
+              {userId}
+            </option>
+          ))}
+        </select>
+        <input
+          type="number"
+          value={filterAmountMin}
+          onChange={(e) => setFilterAmountMin(Number(e.target.value))}
+          placeholder="Min amount"
+        />
+        <input
+          type="number"
+          value={filterAmountMax}
+          onChange={(e) => setFilterAmountMax(Number(e.target.value))}
+          placeholder="Max amount"
+        />
+        <button onClick={handleFilter}>Apply filters</button>
+      </div>
       <ul className="BillsContainer">
         {filteredBills.map((billsItem: billsItemType) => (
           <Bill billsInfo={billsItem} />
