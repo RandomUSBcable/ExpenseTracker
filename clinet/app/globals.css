@@ -149,7 +149,7 @@ a {
 }
 
 .Dashboard{
-  min-height: 60svh;
+  min-height: 100svh;
   background-color: #232D3F;
   margin: 2svh;
   border-radius: 1rem;

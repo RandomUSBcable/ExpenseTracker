@@ -270,6 +270,123 @@ app.put('/api/User/:userID/allocation', (req, res) => {
   });
 });
 
+app.get('/api/User/:userID', async (req, res) => {
+  try {
+    const userID = req.params.userID;
+    
+    // Get user information
+    const [userResults] = await db.query(
+      `SELECT employee_id, employee_name, title, allocation 
+       FROM employees 
+       WHERE employee_id = ?`,
+      [userID]
+    );
+
+    if (userResults.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Get bills information
+    const [billsResults] = await db.query(
+      `SELECT 
+        bill_no as bill_id,
+        employee_id,
+        category,
+        cost,
+        bill_recipient as description,
+        bill_date as date,
+        bill_status,
+        submitted_date
+       FROM bills 
+       WHERE employee_id = ?`,
+      [userID]
+    );
+
+    // Calculate total amount
+    const total = billsResults.reduce((sum, bill) => sum + parseFloat(bill.cost), 0);
+
+    // Combine the results
+    const userData = {
+      ...userResults[0],
+      allocation: parseFloat(userResults[0].allocation) || 0,
+      total,
+      bills: billsResults.map(bill => ({
+        ...bill,
+        cost: parseFloat(bill.cost),
+        date: new Date(bill.date).toISOString().split('T')[0]
+      }))
+    };
+
+    res.json(userData);
+  } catch (error) {
+    console.error('Error fetching user data:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Get specific user's bills
+app.get('/api/User/:userID/bills', async (req, res) => {
+  try {
+    const userID = req.params.userID;
+    
+    // Get user bills with detailed information
+    const [bills] = await db.query(
+      `SELECT 
+        b.bill_no as bill_id,
+        b.employee_id,
+        e.employee_name,
+        b.category,
+        b.cost,
+        b.bill_recipient as description,
+        b.bill_date as date,
+        b.submitted_date,
+        b.bill_status
+       FROM bills b
+       JOIN employees e ON b.employee_id = e.employee_id
+       WHERE b.employee_id = ?
+       ORDER BY b.bill_date DESC`,
+      [userID]
+    );
+
+    // Format the response
+    const formattedBills = bills.map(bill => ({
+      ...bill,
+      cost: parseFloat(bill.cost),
+      date: new Date(bill.date).toISOString().split('T')[0],
+      submitted_date: new Date(bill.submitted_date).toISOString().split('T')[0]
+    }));
+
+    // Get user's allocation and total
+    const [userInfo] = await db.query(
+      `SELECT employee_name, title, allocation 
+       FROM employees 
+       WHERE employee_id = ?`,
+      [userID]
+    );
+
+    if (userInfo.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Calculate total spent
+    const totalSpent = formattedBills.reduce((sum, bill) => sum + bill.cost, 0);
+
+    const response = {
+      employee_id: parseInt(userID),
+      employee_name: userInfo[0].employee_name,
+      title: userInfo[0].title,
+      allocation: parseFloat(userInfo[0].allocation) || 0,
+      total: totalSpent,
+      bills: formattedBills
+    };
+
+    res.json(response);
+  } catch (error) {
+    console.error('Error fetching bills:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 // Start server
 //PORT = process.env.PORT || 8080;
 

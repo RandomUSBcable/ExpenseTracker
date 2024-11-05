@@ -79,61 +79,64 @@ const Dashboard: React.FC = () => {
   };
 
   return (
-    <Container>
-      <Grid container spacing={3}>
-        <Grid item xs={12} md={6}>
-          <Paper elevation={3} style={{ padding: "20px", height: "100%" }}>
-            <Typography variant="h6" gutterBottom>
-              Total Spent
-            </Typography>
-            <Typography variant="h4">
-              {formatCurrency(dashboardData.totalSpent)}
-            </Typography>
-          </Paper>
+    <div className="Dashboard">
+      <Container>
+        <Grid container spacing={3}>
+          <Grid item xs={12} md={6}>
+            <Paper elevation={3} style={{ padding: "20px", height: "100%" }}>
+              <Typography variant="h6" gutterBottom>
+                Total Spent
+              </Typography>
+              <Typography variant="h4">
+                {formatCurrency(dashboardData.totalSpent)}
+              </Typography>
+            </Paper>
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <Paper elevation={3} style={{ padding: "20px", height: "100%" }}>
+              <Typography variant="h6" gutterBottom>
+                Total Allocated
+              </Typography>
+              <Typography variant="h4">
+                {formatCurrency(dashboardData.totalAllocated)}
+              </Typography>
+            </Paper>
+          </Grid>
+          <Grid item xs={12}>
+            <Paper elevation={3} style={{ padding: "20px", height: "400px" }}>
+              <Typography variant="h6" gutterBottom>
+                Spending by Category
+              </Typography>
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={dashboardData.categories}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    outerRadius={80}
+                    fill="#8884d8"
+                    dataKey="value"
+                    label={({ name, value }) =>
+                      `${name}: ${formatCurrency(value)}`
+                    }
+                  >
+                    {dashboardData.categories.map((entry, index) => (
+                      <Cell
+                        cy="50%"
+                        key={`cell-${index}`}
+                        fill={COLORS[index % COLORS.length]}
+                      />
+                    ))}
+                  </Pie>
+                  <Legend />
+                </PieChart>
+              </ResponsiveContainer>
+            </Paper>
+          </Grid>
         </Grid>
-        <Grid item xs={12} md={6}>
-          <Paper elevation={3} style={{ padding: "20px", height: "100%" }}>
-            <Typography variant="h6" gutterBottom>
-              Total Allocated
-            </Typography>
-            <Typography variant="h4">
-              {formatCurrency(dashboardData.totalAllocated)}
-            </Typography>
-          </Paper>
-        </Grid>
-        <Grid item xs={12}>
-          <Paper elevation={3} style={{ padding: "20px", height: "400px" }}>
-            <Typography variant="h6" gutterBottom>
-              Spending by Category
-            </Typography>
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={dashboardData.categories}
-                  cx="50%"
-                  cy="50%"
-                  labelLine={false}
-                  outerRadius={80}
-                  fill="#8884d8"
-                  dataKey="value"
-                  label={({ name, value }) =>
-                    `${name}: ${formatCurrency(value)}`
-                  }
-                >
-                  {dashboardData.categories.map((entry, index) => (
-                    <Cell
-                      key={`cell-${index}`}
-                      fill={COLORS[index % COLORS.length]}
-                    />
-                  ))}
-                </Pie>
-                <Legend />
-              </PieChart>
-            </ResponsiveContainer>
-          </Paper>
-        </Grid>
-      </Grid>
-    </Container>
+      </Container>
+    </div>
   );
 };
 

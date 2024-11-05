@@ -291,167 +291,688 @@ const UserPage = () => {
 export default UserPage;
 */
 
+/*
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useParams } from "next/navigation";
 import {
+  Container,
+  Typography,
+  Paper,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
-  Paper,
   Button,
+  Box,
+  CircularProgress,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
   TextField,
+  MenuItem,
+  Grid,
 } from "@mui/material";
+import {
+  PieChart,
+  Pie,
+  Cell,
+  ResponsiveContainer,
+  Legend,
+  Tooltip,
+} from "recharts";
 
 interface Bill {
-  bill_no: number;
+  bill_id: number;
   employee_id: number;
-  employee_name: string;
   category: string;
+  description: string;
   cost: number;
-  bill_recipient: string;
-  bill_date: string;
-  submitted_date: string;
+  date: string;
   bill_status: string;
+  submitted_date: string;
 }
 
-interface UserData {
+interface User {
   employee_id: number;
   employee_name: string;
   title: string;
-  totalAmount: number;
   allocation: number;
+  total: number;
   bills: Bill[];
 }
 
-const API_BASE_URL = "http://localhost:8080";
+type data = User;
 
-const UserPage: React.FC<{ params: { userID: string } }> = ({ params }) => {
-  const [userData, setUserData] = useState<UserData | null>(null);
-  const [error, setError] = useState<string>("");
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [newAllocation, setNewAllocation] = useState<string>("");
+const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884D8"];
 
-  const userID = params.userID;
+const CATEGORIES = ["Food", "Travel", "Medical", "Office Supplies", "Other"];
+
+const page: React.FC = () => {
+  console.log("UserPage component is being loaded");
+  const params = useParams() as { userID: string };
+  const userId = params.userID;
+
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [openNewBill, setOpenNewBill] = useState(false);
+  const [newBill, setNewBill] = useState({
+    category: "",
+    description: "",
+    cost: "",
+    date: new Date().toISOString().split("T")[0],
+    bill_status: "Pending",
+  });
 
   useEffect(() => {
-    if (!userID) return;
+    if (!userId) return;
 
-    setIsLoading(true);
-    axios
-      .get(`${API_BASE_URL}/api/User/${userID}`)
-      .then((response) => {
-        setUserData(response.data);
-        setError("");
-      })
-      .catch((error) => {
-        console.error("Error fetching user data:", error);
-        setError(`Failed to fetch user data: ${error.message}`);
-        if (error.response) {
-          console.error("Response data:", error.response.data);
-          console.error("Response status:", error.response.status);
+    const fetchUserData = async () => {
+      try {
+        console.log("Fetching data for user:", userId);
+        const response = await fetch(
+          `http://localhost:8080/api/User/${userId}/bills`
+        );
+        setUser(await response.json());
+        setError(null);
+      } catch (err) {
+        console.error("Fetching error:", err);
+        setError(err instanceof Error ? err.message : "An error occurred");
+      } finally {
+        console.log("loading");
+        setLoading(false);
+      }
+    };
+
+    fetchUserData();
+  }, [userId]);
+
+  const handleNewBillSubmit = async () => {
+    try {
+      const response = await fetch(
+        `http://localhost:8080/api/User/${userId}/bills`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            ...newBill,
+            cost: parseFloat(newBill.cost),
+            submitted_date: new Date().toISOString().split("T")[0],
+          }),
         }
-      })
-      .finally(() => {
-        setIsLoading(false);
+      );
+
+      if (!response.ok) throw new Error("Failed to submit bill");
+
+      setOpenNewBill(false);
+      //fetchUserData(); // Refresh data
+
+      // Reset form
+      setNewBill({
+        category: "",
+        description: "",
+        cost: "",
+        date: new Date().toISOString().split("T")[0],
+        bill_status: "Pending",
       });
-  }, [userID]);
-
-  const handleAllocationUpdate = () => {
-    if (!userData) return;
-
-    const allocationValue = parseFloat(newAllocation);
-    if (isNaN(allocationValue) || allocationValue < 0) {
-      setError("Invalid allocation value");
-      return;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to submit bill");
     }
-
-    axios
-      .put(`${API_BASE_URL}/api/User/${userData.employee_id}/allocation`, {
-        allocation: allocationValue,
-      })
-      .then((response) => {
-        setUserData((prevData) => ({
-          ...prevData!,
-          allocation: allocationValue,
-        }));
-        setNewAllocation("");
-        setError("");
-      })
-      .catch((error) => {
-        console.error("Error updating allocation:", error);
-        setError("Failed to update allocation");
-      });
   };
 
-  if (isLoading) {
-    return <div>Loading...</div>;
+  const handleNewBillChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+    setNewBill((prev) => ({ ...prev, [name]: value }));
+  };
+
+  // Prepare data for pie chart
+  const getCategoryData = () => {
+    if (!user?.bills) return [];
+
+    const categoryTotals = user.bills.reduce((acc, bill) => {
+      acc[bill.category] = (acc[bill.category] || 0) + bill.cost;
+      return acc;
+    }, {} as Record<string, number>);
+
+    return Object.entries(categoryTotals).map(([name, value]) => ({
+      name,
+      value,
+    }));
+  };
+
+  if (loading) {
+    return (
+      <Container
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+        }}
+      >
+        <CircularProgress />
+      </Container>
+    );
   }
 
-  if (error) {
-    return <div>Error: {error}</div>;
-  }
-
-  if (!userData) {
-    return <div>No user data available</div>;
+  if (error || !user) {
+    return (
+      <Container>
+        <Typography color="error" variant="h6">
+          {error || "User not found"}
+        </Typography>
+      </Container>
+    );
   }
 
   return (
-    <div>
-      <h1>{userData.employee_name}'s Expense Page</h1>
-      <p>Title: {userData.title}</p>
-      <p>Total Amount Spent: ${userData.totalAmount.toFixed(2)}</p>
-      <p>Current Allocation: ${userData.allocation.toFixed(2)}</p>
+    <Container maxWidth="lg" sx={{ py: 4 }}>
+      <Paper elevation={3} sx={{ p: 3, mb: 4 }}>
+        <Grid container spacing={3}>
+          <Grid item xs={12}>
+            <Typography variant="h4" gutterBottom>
+              {user.employee_name}
+            </Typography>
+            <Typography variant="h6" color="textSecondary" gutterBottom>
+              {user.title}
+            </Typography>
+          </Grid>
 
-      <div>
-        <TextField
-          label="New Allocation"
-          type="number"
-          value={newAllocation}
-          onChange={(e) => setNewAllocation(e.target.value)}
-        />
-        <Button onClick={handleAllocationUpdate}>Update Allocation</Button>
-      </div>
+          <Grid item xs={12} md={6}>
+            <Paper elevation={2} sx={{ p: 2, height: "100%" }}>
+              <Typography variant="h6" gutterBottom>
+                Financial Overview
+              </Typography>
+              <Typography>Allocation: ${user.allocation.toFixed(2)}</Typography>
+              <Typography>Total Spent: ${user.total.toFixed(2)}</Typography>
+              <Typography>
+                Remaining: ${(user.allocation - user.total).toFixed(2)}
+              </Typography>
+            </Paper>
+          </Grid>
 
-      <h2>Bills</h2>
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Bill No</TableCell>
-              <TableCell>Category</TableCell>
-              <TableCell>Cost</TableCell>
-              <TableCell>Recipient</TableCell>
-              <TableCell>Bill Date</TableCell>
-              <TableCell>Submitted Date</TableCell>
-              <TableCell>Status</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {userData.bills.map((bill) => (
-              <TableRow key={bill.bill_no}>
-                <TableCell>{bill.bill_no}</TableCell>
-                <TableCell>{bill.category}</TableCell>
-                <TableCell>${bill.cost.toFixed(2)}</TableCell>
-                <TableCell>{bill.bill_recipient}</TableCell>
-                <TableCell>
-                  {new Date(bill.bill_date).toLocaleDateString()}
-                </TableCell>
-                <TableCell>
-                  {new Date(bill.submitted_date).toLocaleDateString()}
-                </TableCell>
-                <TableCell>{bill.bill_status}</TableCell>
-              </TableRow>
+          <Grid item xs={12} md={6}>
+            <Paper elevation={2} sx={{ p: 2, height: 300 }}>
+              <Typography variant="h6" gutterBottom>
+                Expenses by Category
+              </Typography>
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={getCategoryData()}
+                    dataKey="value"
+                    nameKey="name"
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={80}
+                    label
+                  >
+                    {getCategoryData().map((entry, index) => (
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={COLORS[index % COLORS.length]}
+                      />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                  <Legend />
+                </PieChart>
+              </ResponsiveContainer>
+            </Paper>
+          </Grid>
+
+          <Grid item xs={12}>
+            <Box
+              sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}
+            >
+              <Typography variant="h6">Bills History</Typography>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => setOpenNewBill(true)}
+              >
+                Add New Bill
+              </Button>
+            </Box>
+            <TableContainer component={Paper}>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Date</TableCell>
+                    <TableCell>Category</TableCell>
+                    <TableCell>Description</TableCell>
+                    <TableCell align="right">Amount</TableCell>
+                    <TableCell>Status</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {user.bills.map((bill) => (
+                    <TableRow key={bill.bill_id}>
+                      <TableCell>
+                        {new Date(bill.date).toLocaleDateString()}
+                      </TableCell>
+                      <TableCell>{bill.category}</TableCell>
+                      <TableCell>{bill.description}</TableCell>
+                      <TableCell align="right">
+                        ${bill.cost.toFixed(2)}
+                      </TableCell>
+                      <TableCell>{bill.bill_status}</TableCell>
+                      <TableCell>{bill.bill_status}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Grid>
+        </Grid>
+      </Paper>
+
+      <Dialog open={openNewBill} onClose={() => setOpenNewBill(false)}>
+        <DialogTitle>Add New Bill</DialogTitle>
+        <DialogContent>
+          <TextField
+            select
+            label="Category"
+            name="category"
+            value={newBill.category}
+            onChange={handleNewBillChange}
+            fullWidth
+            margin="normal"
+          >
+            {CATEGORIES.map((option) => (
+              <MenuItem key={option} value={option}>
+                {option}
+              </MenuItem>
             ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </div>
+          </TextField>
+          <TextField
+            label="Description"
+            name="description"
+            value={newBill.description}
+            onChange={handleNewBillChange}
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            label="Cost"
+            name="cost"
+            type="number"
+            value={newBill.cost}
+            onChange={handleNewBillChange}
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            label="Date"
+            name="date"
+            type="date"
+            value={newBill.date}
+            onChange={handleNewBillChange}
+            fullWidth
+            margin="normal"
+            InputLabelProps={{
+              shrink: true,
+            }}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenNewBill(false)} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleNewBillSubmit} color="primary">
+            Submit
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </Container>
   );
 };
 
-export default UserPage;
+export default page;
+*/
+
+"use client";
+
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { useParams } from "next/navigation";
+import {
+  Container,
+  Typography,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Button,
+  Box,
+  CircularProgress,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  MenuItem,
+  Grid,
+} from "@mui/material";
+import {
+  PieChart,
+  Pie,
+  Cell,
+  ResponsiveContainer,
+  Legend,
+  Tooltip,
+} from "recharts";
+
+interface Bill {
+  bill_id: number;
+  employee_id: number;
+  category: string;
+  description: string;
+  cost: number;
+  date: string;
+  bill_status: string;
+  submitted_date: string;
+}
+
+interface User {
+  employee_id: number;
+  employee_name: string;
+  title: string;
+  allocation: number;
+  total: number;
+  bills: Bill[];
+}
+
+const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884D8"];
+const CATEGORIES = ["Food", "Travel", "Medical", "Office Supplies", "Other"];
+
+const page: React.FC = () => {
+  const params = useParams() as { userID: string };
+  const userId = params.userID;
+
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [openNewBill, setOpenNewBill] = useState(false);
+  const [newBill, setNewBill] = useState({
+    category: "",
+    description: "",
+    cost: "",
+    date: new Date().toISOString().split("T")[0],
+    bill_status: "Pending",
+  });
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        // Using the admin API endpoint instead of the user endpoint
+        const response = await axios.get("http://localhost:8080/api/Admin");
+        console.log("Received admin data:", response.data);
+
+        // Find the specific user from the users array
+        const userData = response.data.users.find(
+          (user: User) => user.employee_id.toString() === userId
+        );
+        if (userData) {
+          setUser(userData);
+          console.log("Found user data:", userData);
+        } else {
+          setError("User not found");
+        }
+      } catch (err) {
+        console.error("Fetching error:", err);
+        setError(err instanceof Error ? err.message : "An error occurred");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserData();
+  }, [userId]);
+
+  const handleNewBillSubmit = async () => {
+    try {
+      // Using the admin API endpoint for submitting new bills
+      const response = await axios.post(
+        `http://localhost:8080/api/User/${userId}/bills`,
+        {
+          ...newBill,
+          cost: parseFloat(newBill.cost),
+          submitted_date: new Date().toISOString().split("T")[0],
+        }
+      );
+
+      // Refresh user data after submitting new bill
+      const updatedUserResponse = await axios.get(
+        `http://localhost:8080/api/admin/users/${userId}`
+      );
+      setUser(updatedUserResponse.data);
+
+      setOpenNewBill(false);
+      setNewBill({
+        category: "",
+        description: "",
+        cost: "",
+        date: new Date().toISOString().split("T")[0],
+        bill_status: "Pending",
+      });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to submit bill");
+    }
+  };
+
+  const handleNewBillChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+    setNewBill((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const getCategoryData = () => {
+    if (!user?.bills) return [];
+
+    const categoryTotals = user.bills.reduce((acc, bill) => {
+      acc[bill.category] = (acc[bill.category] || 0) + bill.cost;
+      return acc;
+    }, {} as Record<string, number>);
+
+    return Object.entries(categoryTotals).map(([name, value]) => ({
+      name,
+      value,
+    }));
+  };
+
+  if (loading) {
+    return (
+      <Container
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+        }}
+      >
+        <CircularProgress />
+      </Container>
+    );
+  }
+
+  if (error || !user) {
+    return (
+      <Container>
+        <Typography color="error" variant="h6">
+          {error || "User not found"}
+        </Typography>
+      </Container>
+    );
+  }
+
+  return (
+    <Container maxWidth="lg" sx={{ py: 4 }}>
+      <Paper elevation={3} sx={{ p: 3, mb: 4 }}>
+        <Grid container spacing={3}>
+          <Grid item xs={12}>
+            <Typography variant="h4" gutterBottom>
+              {user.employee_name}
+            </Typography>
+            <Typography variant="h6" color="textSecondary" gutterBottom>
+              {user.title}
+            </Typography>
+          </Grid>
+
+          <Grid item xs={12} md={6}>
+            <Paper elevation={2} sx={{ p: 2, height: "100%" }}>
+              <Typography variant="h6" gutterBottom>
+                Financial Overview
+              </Typography>
+              <Typography>Allocation: ${user.allocation.toFixed(2)}</Typography>
+              <Typography>Total Spent: ${user.total.toFixed(2)}</Typography>
+              <Typography>
+                Remaining: ${(user.allocation - user.total).toFixed(2)}
+              </Typography>
+            </Paper>
+          </Grid>
+
+          <Grid item xs={12} md={6}>
+            <Paper elevation={2} sx={{ p: 2, height: 300 }}>
+              <Typography variant="h6" gutterBottom>
+                Expenses by Category
+              </Typography>
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={getCategoryData()}
+                    dataKey="value"
+                    nameKey="name"
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={80}
+                    label
+                  >
+                    {getCategoryData().map((entry, index) => (
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={COLORS[index % COLORS.length]}
+                      />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                  <Legend />
+                </PieChart>
+              </ResponsiveContainer>
+            </Paper>
+          </Grid>
+
+          <Grid item xs={12}>
+            <Box
+              sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}
+            >
+              <Typography variant="h6">Bills History</Typography>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => setOpenNewBill(true)}
+              >
+                Add New Bill
+              </Button>
+            </Box>
+            <TableContainer component={Paper}>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Date</TableCell>
+                    <TableCell>Category</TableCell>
+                    <TableCell>Description</TableCell>
+                    <TableCell align="right">Amount</TableCell>
+                    <TableCell>Status</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {user.bills.map((bill) => (
+                    <TableRow key={bill.bill_id}>
+                      <TableCell>
+                        {new Date(bill.date).toLocaleDateString()}
+                      </TableCell>
+                      <TableCell>{bill.category}</TableCell>
+                      <TableCell>{bill.description}</TableCell>
+                      <TableCell align="right">
+                        ${bill.cost.toFixed(2)}
+                      </TableCell>
+                      <TableCell>{bill.bill_status}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Grid>
+        </Grid>
+      </Paper>
+
+      <Dialog open={openNewBill} onClose={() => setOpenNewBill(false)}>
+        <DialogTitle>Add New Bill</DialogTitle>
+        <DialogContent>
+          <TextField
+            select
+            label="Category"
+            name="category"
+            value={newBill.category}
+            onChange={handleNewBillChange}
+            fullWidth
+            margin="normal"
+          >
+            {CATEGORIES.map((option) => (
+              <MenuItem key={option} value={option}>
+                {option}
+              </MenuItem>
+            ))}
+          </TextField>
+          <TextField
+            label="Description"
+            name="description"
+            value={newBill.description}
+            onChange={handleNewBillChange}
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            label="Cost"
+            name="cost"
+            type="number"
+            value={newBill.cost}
+            onChange={handleNewBillChange}
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            label="Date"
+            name="date"
+            type="date"
+            value={newBill.date}
+            onChange={handleNewBillChange}
+            fullWidth
+            margin="normal"
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenNewBill(false)} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleNewBillSubmit} color="primary">
+            Submit
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </Container>
+  );
+};
+
+export default page;
